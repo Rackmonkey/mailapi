@@ -1,0 +1,51 @@
+{% extends "layout_account.html" %}
+{% block body %}
+<form class="form-horizontal" role="form" action="{{ url_for('account_account_create') }}" method="post">
+  <div class="form-group">
+    <label for="account_name" class="col-sm-2 control-label">Account</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="account_name" name="account_name" placeholder="Beispielname">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="account_password" class="col-sm-2 control-label">Passwort</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="account_password" name="account_password" placeholder="123$$sicheresPasswort%%">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="rank" class="col-sm-2 control-label">Rank</label>
+    <div class="col-sm-10">
+      <select class="form-control" name="rank">
+       <option value="1">Moderator</option>
+       <option value="2">Benutzer</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Account erstellen</button>
+    </div>
+  </div>
+</form>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Account</th>
+      <th>Rank</th>
+      <th>Erstellt</th>
+      <th>Aktion</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for account in domain.accounts %}
+    <tr>
+      <td>{{ account.account_name }}</td>
+      <td>{{ account.rank.rank_name }}</td>
+      <td>{{ account.created }}</td>
+      <td><a href="{{ url_for('account_account_delete', account_id=account.id) }}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
