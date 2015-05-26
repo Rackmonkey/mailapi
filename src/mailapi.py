@@ -8,14 +8,16 @@ app = Flask(__name__)
 app.config.from_object(config)
 db = SQLAlchemy(app)
 
-import models
 from views import admin
 from views import api
 from views import account
 
 
 @app.route('/')
-def index():
+def index(force_logout=False):
+    if force_logout:
+        session.pop('email', None)
+
     if 'email' not in session:
         return redirect(url_for('account_login'))
     else:

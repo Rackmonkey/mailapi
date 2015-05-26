@@ -1,6 +1,9 @@
 from flask import Flask, request, session, redirect, url_for, escape, render_template
 from mailapi import db, app
-import models
+from models import Admin
+from models import Account
+from models import Domain
+from models import AdminApikey
 
 
 @app.route('/account/account/list', methods=['GET'])
@@ -31,10 +34,10 @@ def account_account_create():
     if len(messages) > 0:
         return redirect(url_for('account_account_list', success=False, messages=messages))
 
-    account = models.Account(domain=domain,
-                             account_name=request.form['account_name'],
-                             password_clear=request.form['account_password'],
-                             rank=models.Rank.query.get(request.form['rank']))
+    account = Account(domain=domain,
+                      account_name=request.form['account_name'],
+                      password_clear=request.form['account_password'],
+                      rank=Rank.query.get(request.form['rank']))
 
     db.session.add(account)
     db.session.commit()
@@ -49,7 +52,7 @@ def account_account_delete(account_id):
     if user_account is None or domain is None or user_account.rank_level != 1:
         return redirect(url_for('account_error_not_authorized'))
 
-    account = models.Account.query.filter(models.Account.id == account_id).first()
+    account = Account.query.filter(Account.id == account_id).first()
 
     if account.domain != domain or account.id == user_account.id:
         return redirect(url_for('account_error_not_authorized'))
@@ -90,9 +93,9 @@ def account_alias_create():
                                 success=False,
                                 messages=messages))
 
-    alias = models.Alias(domain=domain,
-                         source=request.form['source'],
-                         destination=request.form['destination'])
+    alias = Alias(domain=domain,
+                  source=request.form['source'],
+                  destination=request.form['destination'])
 
     db.session.add(alias)
     db.session.commit()
@@ -107,7 +110,7 @@ def account_alias_delete(alias_id):
     if user_account is None or domain is None or user_account.rank_level != 1:
         return redirect(url_for('account_error_not_authorized'))
 
-    alias = models.Alias.query.filter(models.Alias.id == alias_id).first()
+    alias = Alias.query.filter(Alias.id == alias_id).first()
 
     if alias.domain != domain:
         return redirect(url_for('account_error_not_authorized'))
@@ -134,13 +137,13 @@ def account_login():
         valid, account_name, domain_name = get_account_domain_names(email)
 
         if valid:
-            domain = models.Domain.query.filter(models.Domain.domain_name ==
-                                                domain_name).first()
+            domain = Domain.query.filter(Domain.domain_name ==
+                                         domain_name).first()
 
-            account = models.Account.query.filter(models.Account.account_name ==
-                                                  account_name and
-                                                  models.Account.domain ==
-                                                  domain).first()
+            account = Account.query.filter(Account.account_name ==
+                                           account_name and
+                                           Account.domain ==
+                                           domain).first()
 
         if account is not None and account.check_password(request.form['password']):
             session['email'] = request.form['email']
@@ -179,9 +182,9 @@ def get_current_account():
     if not valid:
         return redirect(url_for('index'))
 
-    domain = models.Domain.query.filter(models.Domain.domain_name == domain_name).first()
-    account = models.Account.query.filter(models.Account.account_name == account_name and
-                                          models.Account.domain == domain).first()
+    domain = Domain.query.filter(Domain.domain_name == domain_name).first()
+    account = Account.query.filter(Account.account_name == account_name and
+                                   Account.domain == domain).first()
 
     if account is None:
         return redirect(url_for('index'))

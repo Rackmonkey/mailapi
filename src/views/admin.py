@@ -1,6 +1,10 @@
 from flask import Flask, request, session, redirect, url_for, escape, render_template
 from mailapi import db, app
-import models
+from models import Admin
+from models import Account
+from models import Domain
+from models import AdminApikey
+from models import Rank
 
 
 @app.route('/admin/dashboard')
@@ -32,7 +36,7 @@ def admin_apikey_create():
     if 'description' in request.form:
         description = request.form['description']
 
-    apikey = models.AdminApikey(admin.id, description)
+    apikey = AdminApikey(admin.id, description)
     db.session.add(apikey)
     db.session.commit()
 
@@ -43,7 +47,7 @@ def admin_apikey_create():
 def admin_domain_list():
     admin = get_current_admin()
 
-    domains = models.Domain.query.all()
+    domains = Domain.query.all()
 
     return render_template('admin_domain_list.html', admin=admin, domains=domains)
 
@@ -66,13 +70,13 @@ def admin_domain_create():
     if len(messages) > 0:
         return redirect(url_for('admin_domain_list', success=False, messages=messages))
 
-    domain = models.Domain(domain_name=request.form['domain_name'],
-                           admin=admin)
+    domain = Domain(domain_name=request.form['domain_name'],
+                    admin=admin)
 
-    account = models.Account(domain=domain,
-                             account_name=request.form['account_name'],
-                             password_clear=request.form['account_password'],
-                             rank=models.Rank.query.get(1))
+    account = Account(domain=domain,
+                      account_name=request.form['account_name'],
+                      password_clear=request.form['account_password'],
+                      rank=Rank.query.get(1))
 
     db.session.add(account)
     db.session.commit()
@@ -84,7 +88,7 @@ def admin_domain_create():
 def admin_domain_view(domain_id):
     admin = get_current_admin()
 
-    domain = models.Domain.query.get(domain_id)
+    domain = Domain.query.get(domain_id)
 
     view = 'accounts'
     if 'view' in request.values:
@@ -96,7 +100,7 @@ def admin_domain_view(domain_id):
 @app.route('/admin/domain/<int:domain_id>/account/create', methods=['POST'])
 def admin_account_create(domain_id):
     admin = get_current_admin()
-    domain = models.Domain.query.get(domain_id)
+    domain = Domain.query.get(domain_id)
 
     messages = []
 
@@ -109,10 +113,10 @@ def admin_account_create(domain_id):
     if len(messages) > 0:
         return redirect(url_for('admin_domain_view', domain_id=domain_id, success=False, messages=messages))
 
-    account = models.Account(domain=domain,
-                             account_name=request.form['account_name'],
-                             password_clear=request.form['account_password'],
-                             rank=models.Rank.query.get(request.form['rank']))
+    account = Account(domain=domain,
+                      account_name=request.form['account_name'],
+                      password_clear=request.form['account_password'],
+                      rank=Rank.query.get(request.form['rank']))
 
     db.session.add(account)
     db.session.commit()
@@ -123,7 +127,7 @@ def admin_account_create(domain_id):
 @app.route('/admin/domain/<int:domain_id>/alias/create', methods=['POST'])
 def admin_alias_create(domain_id):
     admin = get_current_admin()
-    domain = models.Domain.query.get(domain_id)
+    domain = Domain.query.get(domain_id)
 
     messages = []
 
@@ -140,9 +144,9 @@ def admin_alias_create(domain_id):
                                 messages=messages,
                                 view='aliases'))
 
-    alias = models.Alias(domain=domain,
-                         source=request.form['source'],
-                         destination=request.form['destination'])
+    alias = Alias(domain=domain,
+                  source=request.form['source'],
+                  destination=request.form['destination'])
 
     db.session.add(alias)
     db.session.commit()
@@ -154,7 +158,7 @@ def admin_alias_create(domain_id):
 def admin_admin_list():
     admin = get_current_admin()
 
-    admins = models.Admin.query.all()
+    admins = Admin.query.all()
 
     return render_template('admin_admin_list.html', admin=admin, admins=admins)
 
@@ -176,8 +180,8 @@ def admin_admin_create():
                                 success=False,
                                 messages=messages))
 
-    new_admin = models.Admin(username=request.form['username'],
-                             password_clear=request.form['password'])
+    new_admin = Admin(username=request.form['username'],
+                      password_clear=request.form['password'])
 
     db.session.add(new_admin)
     db.session.commit()
@@ -188,8 +192,8 @@ def admin_admin_create():
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        admin = models.Admin.query.filter(models.Admin.username ==
-                                          request.form['username']).first()
+        admin = Admin.query.filter(Admin.username ==
+                                   request.form['username']).first()
 
         if admin is not None and admin.check_password(request.form['password']):
             session['username'] = request.form['username']
@@ -211,7 +215,7 @@ def get_current_admin():
     if 'username' not in session:
         return redirect(url_for('index'))
 
-    admin = models.Admin.query.filter(models.Admin.username == session['username']).first()
+    admin = Admin.query.filter(Admin.username == session['username']).first()
 
     if admin is None:
         return redirect(url_for('index'))
