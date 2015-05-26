@@ -1,15 +1,7 @@
 .idea/
 __pycache__/
 venv/
-<<<<<<< HEAD
-<<<<<<< HEAD
 *.pyc
 db_repository/
 db_create_default_admin.py
-=======
->>>>>>> 9fe179c... added venv to gitignore
-=======
-*.pyc
-db_repository/
-db_create_default_admin.py
->>>>>>> dd169c9... created admin interface
+*.swp
