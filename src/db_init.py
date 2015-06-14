@@ -1,5 +1,6 @@
 import getpass
-import models
+from models import Rank
+from models import Admin
 from mailapi import db
 
 def create_default_values():
