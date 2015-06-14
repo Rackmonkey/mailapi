@@ -4,10 +4,10 @@ from models import Admin
 from mailapi import db
 
 def create_default_values():
-    rank = models.Rank(1, 'Moderator')
+    rank = Rank(1, 'Moderator')
     db.session.add(rank)
 
-    rank = models.Rank(2, 'User')
+    rank = Rank(2, 'User')
     db.session.add(rank)
     db.session.commit()
 
@@ -15,7 +15,7 @@ def create_account():
     username = input("Please enter a username for the first Account: ")
     password = getpass.getpass("Please enter a safety password: ")
 
-    admin_account = models.Admin(username, password)
+    admin_account = Admin(username, password)
     db.session.add(admin_account)
     db.session.commit()
 
