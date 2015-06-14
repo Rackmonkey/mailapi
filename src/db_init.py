@@ -1,7 +1,7 @@
 import getpass
+from mailapi import db
 from models import Rank
 from models import Admin
-from mailapi import db
 
 def create_default_values():
     rank = Rank(1, 'Moderator')
