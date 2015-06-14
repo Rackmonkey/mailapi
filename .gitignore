@@ -5,3 +5,4 @@ venv/
 db_repository/
 db_create_default_admin.py
 *.swp
+.ropeproject/
