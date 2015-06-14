@@ -58,14 +58,9 @@ def admin_domain_create():
 
     messages = []
 
-    if 'domain_name' not in request.form:
+    if 'domain_name' not in request.form or len(request.form['domain_name']) == 0:
         messages.append('Kein Domainname angegeben')
 
-    if 'account_name' not in request.form:
-        messages.append('Kein Accountname angegeben')
-
-    if 'account_password' not in request.form:
-        messages.append('Kein Accountpasswort angegeben')
 
     if len(messages) > 0:
         return redirect(url_for('admin_domain_list', success=False, messages=messages))
@@ -73,12 +68,16 @@ def admin_domain_create():
     domain = Domain(domain_name=request.form['domain_name'],
                     admin=admin)
 
-    account = Account(domain=domain,
-                      account_name=request.form['account_name'],
-                      password_clear=request.form['account_password'],
-                      rank=Rank.query.get(1))
+    if len(request.form['account_name']) > 0 and len(request.form['account_password']) > 0:
+        account = Account(domain=domain,
+                          account_name=request.form['account_name'],
+                          password_clear=request.form['account_password'],
+                          rank=Rank.query.get(1))
 
-    db.session.add(account)
+        db.session.add(account)
+    else:
+        db.session.add(domain)
+
     db.session.commit()
 
     return redirect(url_for('admin_domain_list', success=True))
