@@ -1,4 +1,5 @@
-import hashlib
+import crypt
+from hmac import compare_digest as compare_hash
 from mailapi import db, config
 from collections import OrderedDict
 import datetime
@@ -37,16 +38,11 @@ class Account(db.Model):
         return return_dict
 
     def get_crypt_password(self, password_clear):
-        password_hash = hashlib.sha512((self.created.isoformat() +
-                                        password_clear +
-                                        config.PASSWORD_PEPPER).encode())
-
-        return password_hash.hexdigest()
+        prefix = ""
+        return prefix + crypt.crypt(password_clear, crypt.mksalt(crypt.METHOD_SHA512))
 
     def check_password(self, password_clear):
-        password_hash = self.get_crypt_password(password_clear)
-
-        return password_hash == self.password
+        return compare_hash(crypt.crypt(password_clear, self.password), self.password)
 
     def is_domain_admin(self):
         return self.rank_level == 1
