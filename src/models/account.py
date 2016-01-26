@@ -15,7 +15,7 @@ class Account(db.Model):
     rank_level = db.Column(db.Integer, db.ForeignKey('rank.rank_level'), nullable=False)
     created = db.Column(db.DateTime, nullable=False)
 
-    __table_args__ = (db.UniqueConstraint('domain_id', 'account_name', name='domain_id_account_uc'))
+    __table_args__ = (db.UniqueConstraint('domain_id', 'account_name', name='domain_id_account_uc'),)
 
     rank = db.relationship('Rank', backref='account')
 
