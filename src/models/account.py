@@ -10,10 +10,12 @@ class Account(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     domain_id = db.Column(db.Integer, db.ForeignKey('domain.id'), nullable=False)
-    account_name = db.Column(db.String(), unique=True, nullable=False)
+    account_name = db.Column(db.String(), nullable=False)
     password = db.Column(db.String(), nullable=False)
     rank_level = db.Column(db.Integer, db.ForeignKey('rank.rank_level'), nullable=False)
     created = db.Column(db.DateTime, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('domain_id', 'account_name', name='domain_id_account_uc'))
 
     rank = db.relationship('Rank', backref='account')
 
