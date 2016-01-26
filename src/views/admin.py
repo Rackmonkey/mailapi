@@ -5,6 +5,7 @@ from models import Account
 from models import Domain
 from models import AdminApikey
 from models import Rank
+from models import Alias
 
 
 @app.route('/admin/dashboard')
